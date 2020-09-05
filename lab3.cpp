@@ -5,8 +5,10 @@
 
 using namespace std;
 
+//’эндл мьютекса
 HANDLE Mutex;
 
+//’эндел семафоров
 HANDLE SemB, SemC, SemD, SemM, SemK, wait_interval, start_interval;
 
 unsigned int lab3_thread_graph_id()
@@ -24,11 +26,18 @@ const char* lab3_sequential_threads()
 	return "bcd";
 }
 
+const char* lab3_additional_sequential_threads()
+{
+	return "mk";
+}
+
 
 DWORD WINAPI thread_a(LPVOID lpParam)
 {
 	for (int i = 0; i < 4; i++) {
-		// If dwMilliseconds is INFINITE, the function will return only when the object is signaled.
+		// If dwMilliseconds is INFINITE, the function will return only when the object is signaled
+		// ≈сли dwMilliseconds имеет значение INFINITE, функци€ вернетс€ только тогда, когда объект получит сигнал
+		// ћожет быть указан временем
 		WaitForSingleObject(Mutex, INFINITE);
 		cout << 'a' << flush;
 		ReleaseMutex(Mutex);
@@ -46,8 +55,8 @@ DWORD WINAPI thread_b(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 
@@ -85,8 +94,8 @@ DWORD WINAPI thread_d(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 		WaitForSingleObject(SemD, INFINITE);
@@ -97,8 +106,8 @@ DWORD WINAPI thread_d(LPVOID lpParam)
 		ReleaseSemaphore(SemB, 1, nullptr);
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -147,8 +156,8 @@ DWORD WINAPI thread_h(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 		WaitForSingleObject(Mutex, INFINITE);
@@ -157,8 +166,8 @@ DWORD WINAPI thread_h(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 		WaitForSingleObject(Mutex, INFINITE);
@@ -179,8 +188,8 @@ DWORD WINAPI thread_f(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 		WaitForSingleObject(Mutex, INFINITE);
@@ -211,8 +220,8 @@ DWORD WINAPI thread_k(LPVOID lpParam)
 		computation();
 	}
 
-	ReleaseSemaphore(wait_interval, 1, nullptr);    //current interval ended
-	WaitForSingleObject(start_interval, INFINITE);  //start new interval
+	ReleaseSemaphore(wait_interval, 1, nullptr);    //текущий интервал закончилс€
+	WaitForSingleObject(start_interval, INFINITE);  //начат новый интервал
 
 	for (int i = 0; i < 4; i++) {
 		WaitForSingleObject(SemK, INFINITE);
@@ -303,7 +312,8 @@ int lab3_init()
 
 	HANDLE threadA, threadB, threadC, threadD, threadE, threadF, threadG, threadH, threadI, threadK, threadM;
 
-	//1-st interval
+	//1-й интервал
+
 	threadA = CreateThread(nullptr, 0, thread_a, nullptr, 0, nullptr);
 	if (threadA == nullptr) return GetLastError();
 
@@ -314,25 +324,26 @@ int lab3_init()
 	if (threadD == nullptr) return GetLastError();
 
 
-	WaitForSingleObject(threadA, INFINITE);                              //join with ended thread A
+	WaitForSingleObject(threadA, INFINITE);                         //join with ended thread A
 	WaitForSingleObject(wait_interval, INFINITE);                   //wait for thread B to finish
-	WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread D to finish
+	WaitForSingleObject(wait_interval, INFINITE);					//wait for thread D to finish
 
-	//2-d interval
+	//2-ой интервал
 
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread B
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread D
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread B
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread D
 
 
 	threadC = CreateThread(nullptr, 0, thread_c, nullptr, 0, nullptr);
 	if (threadC == nullptr) return GetLastError();
 
-	WaitForSingleObject(threadC, INFINITE);						//join with ended thread C
-	WaitForSingleObject(threadB, INFINITE);						//join with ended thread B
-	WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread D to finish
+	WaitForSingleObject(threadC, INFINITE);							//join with ended thread C
+	WaitForSingleObject(threadB, INFINITE);							//join with ended thread B
+	WaitForSingleObject(wait_interval, INFINITE);					//wait for thread D to finish
 
-	//3-d interval
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread D
+	//3-й интеравал
+
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread D
 
 	threadF = CreateThread(nullptr, 0, thread_f, nullptr, 0, nullptr);
 	if (threadF == nullptr) return GetLastError();
@@ -343,46 +354,48 @@ int lab3_init()
 	threadH = CreateThread(nullptr, 0, thread_h, nullptr, 0, nullptr);
 	if (threadH == nullptr) return GetLastError();
 
-	WaitForSingleObject(threadD, INFINITE);						//join with ended thread D
-	WaitForSingleObject(threadE, INFINITE);						//join with ended thread E
+	WaitForSingleObject(threadD, INFINITE);							//join with ended thread D
+	WaitForSingleObject(threadE, INFINITE);							//join with ended thread E
 	WaitForSingleObject(wait_interval, INFINITE);                   //wait for thread F to finish
-	WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread H to finish
+	WaitForSingleObject(wait_interval, INFINITE);					//wait for thread H to finish
 
-	//4-th interval
+	//4-й интервал
 
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread F
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread H
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread F
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread H
 
 	threadG = CreateThread(nullptr, 0, thread_g, nullptr, 0, nullptr);
 	if (threadG == nullptr) return GetLastError();
 
-	WaitForSingleObject(threadG, INFINITE);						//join with ended thread G
-	WaitForSingleObject(threadF, INFINITE);						//join with ended thread F
+	WaitForSingleObject(threadG, INFINITE);							//join with ended thread G
+	WaitForSingleObject(threadF, INFINITE);							//join with ended thread F
 
-	WaitForSingleObject(wait_interval, INFINITE);                 //wait for thread H to finish
+	WaitForSingleObject(wait_interval, INFINITE);					//wait for thread H to finish
 
 
-	//5-th interval
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread H
+	//5-ый интервал
+
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread H
 	threadI = CreateThread(nullptr, 0, thread_i, nullptr, 0, nullptr);
 	if (threadI == nullptr) return GetLastError();
 	threadK = CreateThread(nullptr, 0, thread_k, nullptr, 0, nullptr);
 	if (threadK == nullptr) return GetLastError();
-	WaitForSingleObject(threadH, INFINITE);						//join with ended thread H
-	WaitForSingleObject(threadI, INFINITE);						//join with ended thread I
-	WaitForSingleObject(wait_interval, INFINITE);						//wait for thread K to finish
+	WaitForSingleObject(threadH, INFINITE);							//join with ended thread H
+	WaitForSingleObject(threadI, INFINITE);							//join with ended thread I
+	WaitForSingleObject(wait_interval, INFINITE);					//wait for thread K to finish
 
-	//6-th interval
-	ReleaseSemaphore(start_interval, 1, nullptr);            //continue thread K
+	//6-ой интервал
+
+	ReleaseSemaphore(start_interval, 1, nullptr);					//continue thread K
 
 	threadM = CreateThread(nullptr, 0, thread_m, nullptr, 0, nullptr);
 	if (threadM == nullptr) return GetLastError();
 
-	WaitForSingleObject(threadM, INFINITE);						//join with ended thread M
-	WaitForSingleObject(threadK, INFINITE);						//join with ended thread K
+	WaitForSingleObject(threadM, INFINITE);							//join with ended thread M
+	WaitForSingleObject(threadK, INFINITE);							//join with ended thread K
 
 
-	//CLOSE DA ALL
+	//ќсвобождение ресурсов
 
 	CloseHandle(threadA);
 	CloseHandle(threadB);
